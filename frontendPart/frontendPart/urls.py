@@ -19,5 +19,6 @@ from webcode.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',principal),
+    path('',principal,name='index'),
+    path('getxml/',xmldata,name='xml')
 ]

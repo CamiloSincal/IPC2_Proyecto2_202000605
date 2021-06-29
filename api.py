@@ -1,12 +1,14 @@
 from os import truncate
 from re import findall
 from typing import Sized
-from flask import Flask
-from flask.globals import request
+from flask import Flask, request
 from xml.etree import ElementTree as ET
 from xml.dom import minidom
 from datetime import datetime
+from flask_cors import CORS
 
+app = Flask(__name__)
+cors = CORS(app,resources={r"/*": {"origin": "*"}})
 #Clase para almacenar y controlar los datos de los mejores clientes del xml de retorno
 class mejoresClientes:
     def __init__(self,nombre,monto):
@@ -34,7 +36,6 @@ class juegosChet:
     def __init__(self,nombre,stock):
         self.nombre = nombre
         self.stock = stock
-app = Flask(__name__)
 
 mjClientes = []
 juegosMasVendidos = []
@@ -254,4 +255,4 @@ def getxml():
     return doc
 
 if __name__=="__main__":
-    app.run()
+    app.run(debug=True)

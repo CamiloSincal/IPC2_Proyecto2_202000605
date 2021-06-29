@@ -5,6 +5,14 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Hola mundo</h1>
+    <form action="/getxml/" method="post"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="xmldata" id="xmldata">
+        <input type="submit" value="Enviar">
+    </form>
+    <h2>XML</h2>
+    <textarea name="out" id="out" cols="60" rows="30" readonly>
+        {{content}}
+    </textarea>
 </body>
 </html>
