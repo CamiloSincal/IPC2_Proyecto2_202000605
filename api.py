@@ -252,7 +252,8 @@ def getxml():
         stockJuego.text = totalG[m].stock
 
     doc = ET.tostring(title,encoding='utf-8')
-    return doc
+    docDom = minidom.parseString(doc)
+    return docDom.toprettyxml(indent="\t")
 
 if __name__=="__main__":
     app.run(debug=True)

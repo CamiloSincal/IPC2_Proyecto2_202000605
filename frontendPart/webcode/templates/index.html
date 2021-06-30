@@ -5,13 +5,24 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/getxml/" method="post"  enctype="multipart/form-data">
+    <form action="/csvfiles/" method="post"  enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="xmldata" id="xmldata">
+        
+        <h3>Archivo de Clientes</h3>
+        <input type="file" name="clientesdata" id="clientesdata">
+        <h3>Archivo de Mejores Clientes</h3>
+        <input type="file" name="mejoresdata" id="mejoresdata">
+        <h3>Archivo de juegos más Vendidos</h3>
+        <input type="file" name="juegosvendidosdata" id="juegosvendidosdata">
+        <h3>Archivo de todos los juegos</h3>
+        <input type="file" name="juegosdata" id="juegosdata">
         <input type="submit" value="Enviar">
     </form>
     <h2>XML</h2>
-    <textarea name="out" id="out" cols="60" rows="30" readonly>
+    <textarea name="out" id="out" cols="80" rows="30">
+        {{XML}}
+    </textarea>
+    <textarea name="out2" id="out2" cols="80" rows="30" readonly>
         {{content}}
     </textarea>
 </body>

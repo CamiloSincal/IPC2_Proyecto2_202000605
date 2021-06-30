@@ -20,5 +20,5 @@ from webcode.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',principal,name='index'),
-    path('getxml/',xmldata,name='xml')
+    path('csvfiles/',csvProcess,name='csvP')
 ]
