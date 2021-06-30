@@ -5,9 +5,64 @@
     <title>Document</title>
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script>
+        var bar2Config = {
+          type:'bar',
+          data:{
+            datasets: [{
+              data: {{numClas|safe}},
+              backgroundColor:{{clasColors|safe}},
+              label: 'Cantidad por clasificacion'
+            }],
+            labels: {{Clasificacion|safe}}
+          },
+          options: {
+            
+            responsive: true
+          }
+        }
+        var barConfig ={
+          type:'bar',
+          data:{
+            datasets: [{
+              data: {{gasto|safe}},
+              backgroundColor:{{barColores|safe}},
+              label: 'Monto Gastado'
+            }],
+            labels: {{namesC|safe}}
+          },
+          options: {
+            responsive: true
+          }
+        };
+        var config = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: {{copias|safe}},
+              backgroundColor:{{colores|safe}},
+              label: 'Juegos Más vendidos'
+            }],
+            labels: {{namesGames|safe}}
+          },
+          options: {
+            responsive: true
+          }
+        };
+        
+        window.onload = function() {
+          var ctx = document.getElementById('pie-chart').getContext('2d');
+          var ctx2 = document.getElementById('bar-chart').getContext('2d');
+          var ctx3 = document.getElementById('clas-chart').getContext('2d');
+          window.myPie = new Chart(ctx, config);
+          window.myBar = new Chart(ctx2,barConfig);
+          window.myBar2 = new Chart(ctx3,bar2Config)
+        };
+    
+      </script>
     <form action="/csvfiles/" method="post"  enctype="multipart/form-data">
         {% csrf_token %}
-        
         <h3>Archivo de Clientes</h3>
         <input type="file" name="clientesdata" id="clientesdata">
         <h3>Archivo de Mejores Clientes</h3>
@@ -18,12 +73,59 @@
         <input type="file" name="juegosdata" id="juegosdata">
         <input type="submit" value="Enviar">
     </form>
-    <h2>XML</h2>
-    <textarea name="out" id="out" cols="80" rows="30">
+    
+    <h2>XML a enviar</h2>
+    <form action="/sendXML/" method="post"  enctype="multipart/form-data">
+      {% csrf_token %}
+      <textarea name="out" id="out" cols="80" rows="30">
         {{XML}}
     </textarea>
+      <input type="submit" value="Enviar">
+  </form>
+    <h2>XML de retorno</h2>
     <textarea name="out2" id="out2" cols="80" rows="30" readonly>
         {{content}}
     </textarea>
+    <h2>Graficas</h2>
+    <h3>Mejores Clientes</h3>
+    <div id="container" style="width: 75%;">
+      <canvas id="bar-chart"></canvas>
+  </div>
+  <h3>Juegos Más Vendidos</h3>
+  <div id="container" style="width: 75%;">
+      <canvas id="pie-chart"></canvas>
+  </div>
+  <h3>Clasificaicones</h3>
+  <div id="container" style="width: 75%;">
+      <canvas id="clas-chart"></canvas>
+  </div>
+  <h3>Cumpleaños de Clientes</h3>
+  <table border="1" cellpading = "1" cellspacing = "2">
+    <thead>
+      <tr>
+        <td>Nombre y Apellido</td><td>Fecha</td>
+      </tr>
+    </thead>
+    {%for i in dataCum%}
+       <tr>
+          <td>{{i.nombreC}}</td>
+          <td>{{i.fechaC}}</td>
+       </tr> 
+    {% endfor%}
+  </table>
+  <h3>Listado de Juegos</h3>
+  <table border="1" cellpading = "1" cellspacing = "2">
+    <thead>
+      <tr>
+        <td>Nombre del juego</td><td>Stock</td>
+      </tr>
+    </thead>
+    {%for i in dataJuegos%}
+       <tr class={{i.estado}}>
+          <td>{{i.nombre}}</td>
+          <td>{{i.stock}}</td>
+       </tr> 
+    {% endfor%}
+  </table>
 </body>
 </html>

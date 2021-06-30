@@ -3,14 +3,150 @@ from django.utils import encoding
 import requests as req
 from xml.etree import ElementTree as ET
 from xml.dom import minidom
-import codecs
+from .models import Profile
+import random
 dic = {}
+class listaJuegos:
+    def __init__(self,nombre,stock,estado):
+        self.nombre = nombre
+        self.stock = stock
+        self.estado = estado
+
+class cumpleData:
+    def __init__(self,nombreC,fechaC) :
+        self.nombreC = nombreC
+        self.fechaC = fechaC
+        
 # Create your views here.
 def principal(request):
+    nombresMejoresClientes = []
+    montosGastados = []
+    barColors = []
+
+    nombresDeJuegos = []
+    copiasVendidas = []
+    pieColors = []
+
+    tiposClasificacion = []
+    cantidadPClasificacion = []
+    coloresBar2 = []
+
+    nombresCump = []
+    apellidosCump = []
+    fechasCump = []
+    totalCump = []
+
+    nombreTodosJuegos = []
+    stockJuegos = []
+    estadoJuegos = []
+    todosJuegos =[]
     global dic
     xmltext = req.get('http://localhost:5000/getxml')
     stringXML = xmltext.text
+    #Recorrido de nuevo XML
+    doc = minidom.parseString(stringXML)
+    #Busco los juegos más vendidos
+    juegosV =  doc.getElementsByTagName('juegosMasVendidos')
+    for juego in juegosV:
+        nombresJuegos = juego.getElementsByTagName('nombre')
+        copiasV = juego.getElementsByTagName('copiasVendidas')
+        for nombre in nombresJuegos:
+            nombresDeJuegos.append(nombre.firstChild.data)
+        
+        for copia in copiasV:
+            copiasVendidas.append(int(copia.firstChild.data))
+        #Agrego un conjunto de colores para la gráfica
+        for i in range(len(nombresJuegos)):
+            r = int(random.randint(0,255))
+            g = int(random.randint(0,255))
+            b = int(random.randint(0,255))
+            color = 'rgb('+str(r)+','+str(g)+','+str(b)+')'
+            pieColors.append(color)
+    #Busco a los mejores Clientes
+    mjClientes = doc.getElementsByTagName('mejoresClientes')
+    for client in mjClientes:
+        #Busco los atributos para la gráfica
+        nombresClt = client.getElementsByTagName('nombre')
+        montos = client.getElementsByTagName('monto')
+        for nomb in nombresClt:
+            nombresMejoresClientes.append(nomb.firstChild.data)
+        for mont in montos:
+            montosGastados.append(int(mont.firstChild.data))
+        #Agrego un conjunto de colores para la gráfica
+        for j in range(len(nombresClt)):
+            r = int(random.randint(0,255))
+            g = int(random.randint(0,255))
+            b = int(random.randint(0,255))
+            color = 'rgb('+str(r)+','+str(g)+','+str(b)+')'
+            barColors.append(color)
+        #Busco la etiqueta para clasificaciones
+        clasificaciones = doc.getElementsByTagName('clasificaciones')
+        for clasificaicon in clasificaciones:
+            #Busco los atributos:
+            tipos = clasificaicon.getElementsByTagName('tipo')
+            cantidad = clasificaicon.getElementsByTagName('cantidad')
+            for tipo in tipos:
+                tiposClasificacion.append(tipo.firstChild.data)
+            for cnt in cantidad:
+                cantidadPClasificacion.append(cnt.firstChild.data)
+        #Genero colores para cada barra
+        for k in range(len(tiposClasificacion)):
+            r = int(random.randint(0,255))
+            g = int(random.randint(0,255))
+            b = int(random.randint(0,255))
+            color = 'rgb('+str(r)+','+str(g)+','+str(b)+')'
+            coloresBar2.append(color)
+    #Busco el tag de los cumpleaños
+    cumpleanios = doc.getElementsByTagName('cumpleaños')
+    for cump in cumpleanios:
+        #Busco los atributos
+        nombreCum = cump.getElementsByTagName('nombre')
+        apellidoCum = cump.getElementsByTagName('apellido')
+        fechaCum = cump.getElementsByTagName('fecha')
+        for nmCum in nombreCum:
+            nombresCump.append(nmCum.firstChild.data)
+        for apell in apellidoCum:
+            apellidosCump.append(apell.firstChild.data)
+        for fechCum in fechaCum:
+            fechasCump.append(fechCum.firstChild.data)
+    #Almaceno los datos en un nuevo arreglo
+    for j in range(len(nombresCump)):
+        newCumpleanio = cumpleData(nombresCump[j]+' '+apellidosCump[j],fechasCump[j])
+        totalCump.append(newCumpleanio)
+    #Busco el tag para todos los juegos
+    tJuegos = doc.getElementsByTagName('listaJuegos')
+    for jueg in tJuegos:
+        #Busco los Atributos
+        nombreJuego = jueg.getElementsByTagName('nombre')
+        stockJuego = jueg.getElementsByTagName('stock')
+        #Recorro los atributos y almaceno valores
+        for nmJuego in nombreJuego:
+            nombreTodosJuegos.append(nmJuego.firstChild.data)
+        for stock in stockJuego:
+            stockJuegos.append(stock.firstChild.data)
+            #Determino el valor del stock para verificar si es mayor a 10 y establecer el estado
+            if int(stock.firstChild.data) < 10:
+                estadoJuegos.append('rojo')
+            else:
+                estadoJuegos.append('normal')
+    #Almaceno los datos en un arreglo de clases
+    for k in range(len(nombreTodosJuegos)):
+        newReg = listaJuegos(nombreTodosJuegos[k],stockJuegos[k],estadoJuegos[k])
+        todosJuegos.append(newReg)
+    
+    dic['dataJuegos'] = todosJuegos
+    dic['dataCum'] = totalCump
+    dic['fechasCum'] = fechasCump
     dic['content'] = stringXML
+    dic['namesGames'] = nombresDeJuegos
+    dic['copias'] = copiasVendidas
+    dic['namesC'] = nombresMejoresClientes
+    dic['gasto'] = montosGastados
+    dic['Clasificacion'] = tiposClasificacion
+    dic['numClas'] = cantidadPClasificacion
+    dic['colores'] = pieColors
+    dic['barColores'] = barColors
+    dic['clasColors'] = coloresBar2
     return render(request,'index.html',dic)
 
 def csvProcess(request):
@@ -97,10 +233,14 @@ def csvProcess(request):
             stockJ.text = juegos[gamef+1][4]
         xmlText = ET.tostring(title,encoding='utf-8')
         finalXMLText = minidom.parseString(xmlText)
-        req.post('http://localhost:5000/xml',xmlText)
+        #req.post('http://localhost:5000/xml',xmlText)
         dic['XML'] = finalXMLText.toprettyxml(indent="\t")
         
-        
-        #Creacion de clientes
+    return redirect('index')
 
+def sendXML(request):
+    if request.method == 'POST':
+        xmldata = request.POST.get('out')
+        data = xmldata.encode('utf-8')
+        req.post('http://localhost:5000/xml',data)
     return redirect('index')
