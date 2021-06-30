@@ -7,6 +7,8 @@ from xml.dom import minidom
 from .models import Profile
 import random
 import re
+from django.contrib import messages
+
 dic = {}
 class listaJuegos:
     def __init__(self,nombre,stock,estado):
@@ -202,44 +204,44 @@ def csvProcess(request):
         #--------------Nombres
             if not re.match(patronNombre,clientes[filaEnClientes+1][0]):
                 convertirXML = False
-                print(clientes[filaEnClientes+1][0])
+                messages.error(request,"Se encontró "+str(clientes[filaEnClientes+1][0])+" en el archivo de Clientes, el cual no es un valor valido para los nombres.")
                 break
         #--------------Apellidos
             if not re.match(patronNombre,clientes[filaEnClientes+1][1]):
                     convertirXML = False
-                    print(clientes[filaEnClientes+1][1])
+                    messages.error(request,"Se encontró "+str(clientes[filaEnClientes+1][1])+" en el archivo de Clientes, el cual no es un valor valido para los apellidos.")
                     break
         #--------------Edades
             if not re.match(patronEdad,clientes[filaEnClientes+1][2]):
                     convertirXML = False
-                    print(clientes[filaEnClientes+1][2])
+                    messages.error(request,"Se encontró "+str(clientes[filaEnClientes+1][2])+" en el archivo de Clientes, el cual no es un valor valido para la edad.")
                     break
         #------------Fecha Nacimiento
             if not re.match(patronFecha,clientes[filaEnClientes+1][3]):
                     convertirXML = False
-                    print(clientes[filaEnClientes+1][3])
+                    messages.error(request,"Se encontró "+str(clientes[filaEnClientes+1][3])+" en el archivo de Clientes, el cual no es un valor valido para la fecha de nacimiento.")
                     break
         #------------Primera Compra
             if not re.match(patronFecha,clientes[filaEnClientes+1][4]):
                     convertirXML = False
-                    print(clientes[filaEnClientes+1][4])
+                    messages.error(request,"Se encontró "+str(clientes[filaEnClientes+1][4])+" en el archivo de Clientes, el cual no es un valor valido para la fecha de la primera compra.")
                     break
         #=====================================Mejores Clientes======================================================
         for cadaFilaMjCliente in range(len(mejoresClientes)-1):
         #----------Verifico el nombre
             if not re.match(patronNombre,mejoresClientes[cadaFilaMjCliente+1][0]):
                 convertirXML = False
-                print(mejoresClientes[cadaFilaMjCliente+1][0])
+                messages.error(request,"Se encontró "+str(mejoresClientes[cadaFilaMjCliente+1][0])+" en el archivo de Mejores Clientes, el cual no es un valor valido para el nombre.")
                 break
         #----------Verifico la Fecha de la Ultima compra------------------------
             if not re.match(patronFecha,mejoresClientes[cadaFilaMjCliente+1][1]):
                 convertirXML = False
-                print(mejoresClientes[cadaFilaMjCliente+1][1])
+                messages.error(request,"Se encontró "+str(mejoresClientes[cadaFilaMjCliente+1][1])+" en el archivo de Mejores Clientes, el cual no es un valor valido para la fecha de la ultima compra.")
                 break
         #-----------Verifico la cantidad Comprada-------------------------------
             if not re.match(patronCantidad,mejoresClientes[cadaFilaMjCliente+1][2]):
                 convertirXML = False
-                print(mejoresClientes[cadaFilaMjCliente+1][2])
+                messages.error(request,"Se encontró "+str(mejoresClientes[cadaFilaMjCliente+1][2])+" en el archivo de Mejores Clientes, el cual no es un valor valido para la cantidad de compra.")
                 break
         #-----------Verifico la cantidad Gastada por cliente---------------------
             if not re.match(patronDecimal,mejoresClientes[cadaFilaMjCliente+1][3]) and convertirXML == True:
@@ -247,7 +249,7 @@ def csvProcess(request):
                     mejoresClientes[cadaFilaMjCliente+1][3] = str(mejoresClientes[cadaFilaMjCliente+1][3])+'.00'
                 else:
                     convertirXML = False
-                    print(mejoresClientes[cadaFilaMjCliente+1][3])
+                    messages.error(request,"Se encontró "+str(mejoresClientes[cadaFilaMjCliente+1][3])+" en el archivo de Mejores Clientes, el cual no es un valor valido para la cantidad Gastada.")
                     break
         #===============================Juegos Mas vendidos======================================================
         for cadaFilaJuegoMV in range(len(juegosMasVendidos)-1):
@@ -255,17 +257,17 @@ def csvProcess(request):
         #-------------Verifico la Ultima Compra------------------
             if not re.match(patronFecha,juegosMasVendidos[cadaFilaJuegoMV+1][1]):
                 convertirXML = False
-                print(juegosMasVendidos[cadaFilaJuegoMV+1][1])
+                messages.error(request,"Se encontró "+str(juegosMasVendidos[cadaFilaJuegoMV+1][1])+" en el archivo de Juegos más Vendidos, el cual no es un valor valido para la fecha de la ultima compra.")
                 break
         #------------Verifico las copias vendidas------------------
             if not re.match(patronCantidad,juegosMasVendidos[cadaFilaJuegoMV+1][2]):
                 convertirXML = False
-                print(juegosMasVendidos[cadaFilaJuegoMV+1][2])
+                messages.error(request,"Se encontró "+str(juegosMasVendidos[cadaFilaJuegoMV+1][2])+" en el archivo de Juegos más Vendidos, el cual no es un valor valido para las copias vendidas.")
                 break
         #------------Verifico el stock---------------------
             if not re.match(patronCantidad,juegosMasVendidos[cadaFilaJuegoMV+1][3]):
                 convertirXML = False
-                print(juegosMasVendidos[cadaFilaJuegoMV+1][3])
+                messages.error(request,"Se encontró "+str(juegosMasVendidos[cadaFilaJuegoMV+1][3])+" en el archivo de Juegos más Vendidos, el cual no es un valor valido para el stock.")
                 break
         #=======================Todos los juegos-------------------------
         for cadaFilaJuego in range(len(juegos)-1):
@@ -273,22 +275,22 @@ def csvProcess(request):
         #----------------------Verifico el nombre de la plataforma--------------
             if not re.match(patronPlataforma,juegos[cadaFilaJuego+1][1]):
                 convertirXML = False
-                print(juegos[cadaFilaJuego+1][1])
+                messages.error(request,"Se encontró "+str(juegos[cadaFilaJuego+1][1])+" en el archivo de juegos, el cual no es un valor valido para el nombre de la plataforma.")
                 break
         #-----------------------------Verifico el año------------------
             if not re.match(patronanio,juegos[cadaFilaJuego+1][2]):
                 convertirXML = False
-                print(juegos[cadaFilaJuego+1][2])
+                messages.error(request,"Se encontró "+str(juegos[cadaFilaJuego+1][2])+" en el archivo de juegos, el cual no es un valor valido para el año de publicación.")
                 break
         #--------------------Verifico la clasificación-----------------
             if not re.match(patronClas,juegos[cadaFilaJuego+1][3]):
                 convertirXML = False
-                print(juegos[cadaFilaJuego+1][3])
+                messages.error(request,"Se encontró "+str(juegos[cadaFilaJuego+1][3])+" en el archivo de juegos, el cual no es un valor valido para las clasificaciones.")
                 break
         #------------------Verifico el stock---------------------
             if not re.match(patronCantidad,juegos[cadaFilaJuego+1][4]):
                 convertirXML = False
-                print(juegos[cadaFilaJuego+1][4])
+                messages.error(request,"Se encontró "+str(juegos[cadaFilaJuego+1][4])+" en el archivo de juegos, el cual no es un valor valido para el stock.")
                 break
         #----------------------------------Creación de XML--------------------------------------------------
         if convertirXML:
